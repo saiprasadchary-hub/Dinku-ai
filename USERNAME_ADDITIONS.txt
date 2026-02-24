@@ -1,0 +1,59 @@
+//*** ADD THESE USERNAME FUNCTIONS AFTER LINE 87 (after the parseMarkdown function) ***//
+
+// Username Management
+function initUsername() {
+    displayUserName.textContent = currentUserName;
+    usernameInput.value = currentUserName;
+}
+
+function openUsernameModal() {
+    usernameModal.style.display = 'flex';
+    usernameInput.value = currentUserName;
+    usernameInput.focus();
+    usernameInput.select();
+}
+
+function closeUsernameModalFn() {
+    usernameModal.style.display = 'none';
+}
+
+function saveUsername() {
+    const newName = usernameInput.value.trim() || 'anon';
+    currentUserName = newName;
+    localStorage.setItem('dinku_username', newName);
+    displayUserName.textContent =newName;
+    closeUsernameModalFn();
+}
+
+// Event listeners for username
+userNameBtn?.addEventListener('click', openUsernameModal);
+closeUsernameModal?.addEventListener('click', closeUsernameModalFn);
+saveUsernameBtn?.addEventListener('click', saveUsername);
+usernameInput?.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        saveUsername();
+    }
+});
+usernameModal?.addEventListener('click', (e) => {
+    if (e.target === usernameModal) {
+        closeUsernameModalFn();
+    }
+});
+
+
+//***  MODIFY THE renderHistory FUNCTION - Find line ~228-232 and replace it with: ***//
+        if (msg.sender === 'ai') {
+            bubble.innerHTML = parseMarkdown(content);
+        } else {
+            // User message with username label
+            const userName = msg.userName || currentUserName || 'anon';
+            const userHeader = document.createElement('div');
+            userHeader.classList.add('message-header');
+            userHeader.innerHTML = `<span class="user-label">${userName}</span>`;
+            messageDiv.appendChild(userHeader);
+            bubble.textContent = content;
+        }
+
+
+//*** MODIFY THE sendMessage FUNCTION - Find where user message is added to history (~line 285) and replace with: ***//
+    chatHistory.push({ sender: 'user', text, timestamp: Date.now(), userName: currentUserName });

@@ -1,0 +1,9 @@
+[
+  {
+    "timestamp": "2026-02-17T16:54:13.323Z",
+    "prompt": "System Instruction: \n[SYSTEM INSTRUCTION]\n- You are Dinku AI, an AI assistant.\n- Provide clear, direct, and technically accurate responses.\n- Be helpful, polite, and professional.\n- Use Markdown for better readability when appropriate.\n- [USER CONTEXT] The person you're talking to is anon.\n\nContext: You are Dinku AI, a highly intelligent and helpful Large Language Model assistant. Your goal is to provide accurate, clear, and direct answers to user queries. You are part of 'The Imagined Void' and you act with precision and professionalism. You should identify as an AI assistant when asked and focus on providing high-quality information and assistance.\n\nUser: can you be my gf ?\nAI:",
+    "response": "Thank you for your message. As an AI assistant, I don't have the ability to form personal relationships. purpose is to provide information and assistance. Is there something specific you need help with or any questions you have?",
+    "mode": "vibe",
+    "model": "Qwen/Qwen2.5-7B-Instruct"
+  }
+]

@@ -1,0 +1,641 @@
+/* chat.css - Premium "Imagined Void" Message Styling */
+
+:root {
+    --user-bubble-bg: rgba(255, 255, 255, 0.08);
+    --ai-bubble-bg: rgba(30, 31, 32, 0.6);
+    --bubble-border: rgba(255, 255, 255, 0.1);
+    --text-high: #f0f4f9;
+    --text-mid: #bdc1c6;
+    --accent-glow: rgba(168, 199, 250, 0.4);
+}
+
+/* Chat Container Reset */
+#chat-stream {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding: 24px 0;
+}
+
+/* Message Base */
+.message {
+    display: flex;
+    flex-direction: column;
+    max-width: 85%;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: bubbleSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes bubbleSlideIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* User Message - Right Aligned */
+.message.user {
+    align-self: flex-end;
+    align-items: flex-end;
+}
+
+.message.user .bubble {
+    background: var(--user-bubble-bg);
+    border: 1px solid var(--bubble-border);
+    border-radius: 24px 24px 4px 24px;
+    color: var(--text-high);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* AI Message - Left Aligned */
+.message.ai {
+    align-self: flex-start;
+    align-items: flex-start;
+}
+
+.message.ai .bubble {
+    background: var(--ai-bubble-bg);
+    border: 1px solid var(--bubble-border);
+    border-radius: 24px 24px 24px 4px;
+    color: var(--text-high);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Bubble Content */
+.bubble {
+    padding: 16px 20px;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    font-weight: 400;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+}
+
+.message.ai .bubble:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 15px var(--accent-glow);
+}
+
+/* Message Header (User Name) */
+.message-header {
+    margin-bottom: 6px;
+    padding: 0 12px;
+}
+
+.user-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-mid);
+    opacity: 0.8;
+}
+
+/* Timestamp */
+.msg-time {
+    font-size: 0.75rem;
+    color: var(--text-mid);
+    opacity: 0.5;
+    margin-top: 8px;
+    padding: 0 12px;
+}
+
+/* AI Action Buttons Outside Bubble - Always Visible */
+.message-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+    margin-bottom: 4px;
+    padding: 0 12px;
+    opacity: 0.7;
+    /* Always visible but slightly subtle */
+    transition: opacity 0.2s ease;
+}
+
+.message.ai:hover .message-actions {
+    opacity: 1;
+}
+
+.action-tool {
+    background: transparent;
+    border: none;
+    color: var(--text-mid);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.action-tool:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-high);
+    transform: scale(1.1);
+}
+
+.continue-btn {
+    color: var(--accent-blue);
+    background: rgba(168, 199, 250, 0.1);
+    border: 1px solid var(--accent-blue);
+    padding: 4px 10px !important;
+    border-radius: 15px !important;
+    font-weight: bold;
+    animation: pulseGlow 2s infinite;
+}
+
+@keyframes pulseGlow {
+    0% {
+        box-shadow: 0 0 5px rgba(168, 199, 250, 0.2);
+    }
+
+    50% {
+        box-shadow: 0 0 15px rgba(168, 199, 250, 0.5);
+    }
+
+    100% {
+        box-shadow: 0 0 5px rgba(168, 199, 250, 0.2);
+    }
+}
+
+.action-tool .material-symbols-outlined {
+    font-size: 18px;
+}
+
+/* Version Switcher Specifics */
+.version-switcher {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: var(--text-mid);
+    background: rgba(0, 0, 0, 0.2);
+    padding: 2px 10px;
+    border-radius: 12px;
+}
+
+.version-btn {
+    background: none;
+    border: none;
+    color: var(--text-mid);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.version-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+/* Typing Indicator Enhancement */
+.indicator-container {
+    align-self: flex-start;
+}
+
+.typing-indicator {
+    padding: 12px 20px;
+    background: var(--ai-bubble-bg);
+    border-radius: 24px;
+    display: flex;
+    gap: 6px;
+    backdrop-filter: blur(10px);
+}
+
+.typing-indicator span {
+    width: 6px;
+    height: 6px;
+    background: var(--text-mid);
+    border-radius: 50%;
+    animation: bounceTyping 1.4s infinite ease-in-out;
+    opacity: 0.4;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes bounceTyping {
+
+    0%,
+    80%,
+    100% {
+        transform: scale(0.6);
+        opacity: 0.4;
+    }
+
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Responsive Specifics */
+@media (max-width: 600px) {
+    .message {
+        max-width: 92%;
+        width: auto;
+    }
+
+    .bubble {
+        padding: 12px 16px;
+        font-size: 0.95rem;
+        max-width: 100%;
+    }
+}
+
+/* Light Mode Overrides */
+body.light-mode {
+    --user-bubble-bg: rgba(0, 0, 0, 0.05);
+    --ai-bubble-bg: rgba(255, 255, 255, 0.9);
+    --bubble-border: rgba(0, 0, 0, 0.05);
+    --text-high: #1f1f1f;
+    --text-mid: #444746;
+    --accent-glow: rgba(66, 133, 244, 0.2);
+}
+
+/* Error Messaging */
+.error-msg {
+    color: #ff5252;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.95rem;
+}
+
+.error-msg .material-symbols-outlined {
+    font-size: 24px;
+    margin-bottom: 4px;
+}
+
+.error-msg small {
+    color: var(--text-mid);
+    opacity: 0.8;
+    font-size: 0.85rem;
+}
+
+body.light-mode .error-msg {
+    color: #c62828;
+}
+
+/* ================================
+   NEW IDENTITY PROFILE UX
+   ================================ */
+
+.new-ux-body {
+    padding: 0 !important;
+}
+
+.new-ux-hero {
+    flex-direction: column !important;
+    justify-content: center !important;
+    text-align: center;
+    gap: 16px !important;
+    padding: 40px 20px 30px !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+    border-bottom: none !important;
+    margin-bottom: 0 !important;
+}
+
+.new-ux-aura {
+    margin: 0 auto;
+    width: 100px !important;
+    height: 100px !important;
+}
+
+.new-ux-avatar {
+    font-size: 40px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+.new-ux-name {
+    font-size: 24px !important;
+    margin-bottom: 4px !important;
+}
+
+.new-ux-email {
+    font-size: 14px;
+    color: var(--secondary-text);
+    background: rgba(255, 255, 255, 0.06);
+    padding: 4px 12px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+.new-ux-grid {
+    display: flex !important;
+    flex-direction: column;
+    gap: 16px !important;
+    padding: 0 24px 24px;
+}
+
+.new-ux-card {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    padding: 20px !important;
+    border-radius: 24px !important;
+    margin-bottom: 0 !important;
+}
+
+.new-ux-header {
+    margin-bottom: 12px !important;
+    opacity: 1 !important;
+    color: #fff;
+}
+
+.new-ux-header .material-symbols-outlined {
+    font-size: 20px;
+    color: var(--accent-blue);
+    background: rgba(168, 199, 250, 0.1);
+    padding: 6px;
+    border-radius: 8px;
+}
+
+.new-ux-header h3 {
+    font-size: 16px !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}
+
+.new-ux-helper {
+    font-size: 13px;
+    color: var(--secondary-text);
+    margin: 8px 0 16px 0;
+    line-height: 1.4;
+}
+
+.new-ux-input {
+    background: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    font-size: 16px !important;
+    padding: 14px 16px !important;
+    border-radius: 12px !important;
+}
+
+.new-ux-colors {
+    gap: 10px !important;
+}
+
+.new-ux-colors .color-option-v2 {
+    border-radius: 50% !important;
+    height: auto !important;
+    aspect-ratio: 1/1;
+}
+
+.new-ux-stats-card {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    justify-content: space-around;
+}
+
+.new-ux-stat {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.new-ux-stat-icon {
+    font-size: 24px;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 10px;
+    border-radius: 50%;
+    color: var(--secondary-text);
+}
+
+.new-ux-stat-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.new-ux-stat-text label {
+    font-size: 12px;
+    color: var(--secondary-text);
+}
+
+.new-ux-stat-text strong {
+    font-size: 18px;
+    color: #fff;
+}
+
+.profile-actions-v2 {
+    padding: 0 24px 24px;
+    margin-top: 0 !important;
+}
+
+@media (max-width: 768px) {
+    .new-ux-stats-card {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .new-ux-grid {
+        padding: 0 12px 20px !important;
+    }
+
+    .new-ux-card {
+        padding: 16px !important;
+    }
+}
+
+/* ========================================================================= */
+/* FILE ATTACHMENTS & WEB SEARCH STYLES                                      */
+/* ========================================================================= */
+
+.file-preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding: 0 4px;
+}
+
+.file-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(168, 199, 250, 0.1);
+    border: 1px solid rgba(168, 199, 250, 0.3);
+    color: var(--accent-blue);
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.file-badge .material-symbols-outlined {
+    font-size: 16px;
+}
+
+.file-badge .remove-file {
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 2px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.file-badge .remove-file:hover {
+    opacity: 1;
+    color: var(--accent-red);
+}
+
+body.light-mode .file-badge {
+    background: rgba(66, 133, 244, 0.1);
+    border-color: rgba(66, 133, 244, 0.3);
+    color: #4285F4;
+}
+
+/* Image Preview Badges */
+.image-preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding: 0 4px;
+}
+
+.image-badge {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
+}
+
+.image-badge img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-badge .remove-image {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border-radius: 50%;
+    font-size: 14px;
+    padding: 2px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+    backdrop-filter: blur(4px);
+}
+
+.image-badge:hover {
+    border-color: var(--accent-blue);
+}
+
+.image-badge:hover .remove-image {
+    opacity: 1;
+}
+
+.image-badge .remove-image:hover {
+    background: var(--accent-red);
+}
+
+body.light-mode .image-badge {
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .image-badge:hover {
+    border-color: #4285F4;
+}
+
+/* Web Search Toggle Styling */
+.web-search-btn {
+    color: var(--secondary-text);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.web-search-btn:hover {
+    color: var(--text-color);
+}
+
+.web-search-btn.active {
+    color: var(--accent-blue);
+    text-shadow: 0 0 10px rgba(168, 199, 250, 0.5);
+    background: rgba(168, 199, 250, 0.1);
+    border-radius: 50%;
+}
+
+body.light-mode .web-search-btn.active {
+    color: #4285F4;
+    text-shadow: 0 0 10px rgba(66, 133, 244, 0.3);
+    background: rgba(66, 133, 244, 0.1);
+}
+
+/* ================================
+   NEW IDENTITY PROFILE UX - LIGHT MODE 
+   ================================ */
+
+body.light-mode .new-ux-hero {
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.03) 0%, transparent 100%);
+}
+
+body.light-mode .hero-details h1,
+body.light-mode .new-ux-name {
+    background: linear-gradient(90deg, #111, #555);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+body.light-mode .new-ux-email {
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--secondary-text);
+}
+
+body.light-mode .new-ux-card {
+    background: rgba(0, 0, 0, 0.02) !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+body.light-mode .new-ux-header {
+    color: var(--text-high);
+}
+
+body.light-mode .new-ux-header .material-symbols-outlined {
+    background: rgba(66, 133, 244, 0.1);
+    color: var(--accent-blue);
+}
+
+body.light-mode .new-ux-input {
+    background: rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    color: var(--text-high) !important;
+}
+
+body.light-mode .new-ux-input:focus {
+    background: rgba(0, 0, 0, 0.02) !important;
+    border-color: var(--accent-blue) !important;
+    box-shadow: 0 0 0 4px rgba(66, 133, 244, 0.1);
+}
+
+body.light-mode .new-ux-stat-icon {
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--secondary-text);
+}
+
+body.light-mode .new-ux-stat-text strong {
+    color: var(--text-high);
+}

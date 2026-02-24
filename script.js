@@ -1,0 +1,1 @@
+import './chat.js?v=1.4.0';
