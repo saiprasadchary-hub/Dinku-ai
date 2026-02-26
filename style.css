@@ -92,6 +92,14 @@ body.light-mode .model-select {
     background: var(--hover-color);
 }
 
+button,
+a,
+.padels-option,
+.message,
+.code-btn {
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -161,13 +169,17 @@ html {
     min-width: 0;
     /* CRITICAL: Allows flex child to shrink below its content size */
     width: 100%;
-    margin-left: 70px;
-    /* Default sidebar width */
-    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding-left: 70px;
+    /* Fixed starting position */
+    margin-left: 0;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+    contain: paint;
 }
 
 body.sidebar-active .main-content {
-    margin-left: 280px;
+    transform: translateX(210px);
+    /* 280 - 70 = 210px shift */
 }
 
 /* Sidebar overlay fix for mobile/tablet */
@@ -246,7 +258,7 @@ body.sidebar-active .main-content {
     /* Dark text for white background */
     padding: 8px 12px;
     border-radius: 20px;
-    transition: background 0.2s, color 0.2s;
+    transition: background 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .padels-select:hover {
@@ -892,6 +904,11 @@ body.light-mode .card:hover .icon {
 #mic-btn:hover {
     color: #ff5546;
     background: rgba(255, 85, 70, 0.15);
+}
+
+#gen-image-btn:hover {
+    color: #d57eeb;
+    background: rgba(213, 126, 235, 0.15);
 }
 
 /* Dynamic Send Button Glow */
@@ -3935,4 +3952,15 @@ body.light-mode .widget-badge {
 
 body.light-mode .premium-textarea {
     border-color: rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 600px) {
+    .input-box {
+        padding: 8px 12px;
+        gap: 8px;
+    }
+
+    .input-box .material-symbols-outlined {
+        font-size: 20px;
+    }
 }

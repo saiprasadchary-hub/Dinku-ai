@@ -99,6 +99,26 @@ function initSidebarInteraction() {
         });
     }
 
+    // Export Chat
+    const exportBtn = sidebarContainer.querySelector('#export-chat-item');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', () => {
+            window.dispatchEvent(new CustomEvent('export-chat-requested'));
+            // Close sidebar on mobile
+            if (window.innerWidth <= 768) sidebar.classList.remove('active');
+        });
+    }
+
+    // Share Chat
+    const shareBtn = sidebarContainer.querySelector('#share-chat-item');
+    if (shareBtn) {
+        shareBtn.addEventListener('click', () => {
+            window.dispatchEvent(new CustomEvent('share-chat-requested'));
+            // Close sidebar on mobile
+            if (window.innerWidth <= 768) sidebar.classList.remove('active');
+        });
+    }
+
     // --- RECENT LIST PERSISTENCE LOGIC ---
     const recentItemsContainer = sidebarContainer.querySelector('#recent-items-container');
     const clearAllBtn = sidebarContainer.querySelector('#clear-all-sessions');

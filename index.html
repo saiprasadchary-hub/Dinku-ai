@@ -12,6 +12,18 @@
     <meta name="keywords"
         content="Dinku AI, AI Assistant, Artificial Intelligence, Chatbot, Smart Assistant, Gemini AI, OpenAI Alternative, dinku, dinku ai, dinkuu ai, dinkku, rika ai, rika, ai">
     <meta name="author" content="Dinku AI">
+    <meta property="og:site_name" content="Dinku AI">
+
+    <!-- JSON-LD Structured Data for Google Site Name -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Dinku AI",
+      "alternateName": ["Dinku", "Dinkuu AI"],
+      "url": "https://dinkuu-ai.web.app/"
+    }
+    </script>
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -45,6 +57,7 @@
     <link rel="apple-touch-icon" href="logo.png">
     <link rel="stylesheet" href="components/sidebar/sidebar.css">
     <link rel="stylesheet" href="chat.css?v=1.0.0">
+    <link rel="stylesheet" href="smoothness.css">
 </head>
 
 <body>
@@ -141,6 +154,43 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="padels-select" id="persona-select">
+                        <span class="text">Persona: Vibe</span>
+                        <span class="material-symbols-outlined dropdown-icon">arrow_drop_down</span>
+                        <div class="padels-dropdown" id="persona-dropdown">
+                            <div class="padels-option active" data-value="vibe">
+                                <span class="material-symbols-outlined">smart_toy</span>
+                                <span>Vibe (Default)</span>
+                            </div>
+                            <div class="padels-option" data-value="ui">
+                                <span class="material-symbols-outlined">brush</span>
+                                <span>UI Expert</span>
+                            </div>
+                            <div class="padels-option" data-value="security">
+                                <span class="material-symbols-outlined">security</span>
+                                <span>Security</span>
+                            </div>
+                            <div class="padels-option" data-value="logic">
+                                <span class="material-symbols-outlined">memory</span>
+                                <span>Logic Base</span>
+                            </div>
+                            <div class="padels-option" data-value="creative">
+                                <span class="material-symbols-outlined">movie</span>
+                                <span>Creative</span>
+                            </div>
+                            <div class="padels-option" data-value="deepseek">
+                                <span class="material-symbols-outlined">code</span>
+                                <span>DeepSeek-Coder</span>
+                            </div>
+                            <!-- Erotic persona kept generic to match backend mode -->
+                            <div class="padels-option" data-value="erotic">
+                                <span class="material-symbols-outlined">warning</span>
+                                <span>Uncensored</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <span class="material-symbols-outlined" id="settings-icon" title="Settings"
                         onclick="openSettings()">
                         settings
@@ -189,7 +239,8 @@
             <div class="input-area">
                 <div class="input-container">
                     <!-- File Attachment Input -->
-                    <input type="file" id="file-upload" hidden accept=".txt, .md, .js, .py, .html, .css, .json, .csv">
+                    <input type="file" id="file-upload" hidden
+                        accept=".txt, .md, .js, .py, .html, .css, .json, .csv, .pdf, .docx">
 
                     <!-- Image Upload Input -->
                     <input type="file" id="image-upload" hidden accept="image/*">
@@ -209,8 +260,10 @@
                         <span class="material-symbols-outlined web-search-btn" id="web-search-btn"
                             title="Toggle Web Search">public</span>
 
-                        <span class="material-symbols-outlined" id="mic-btn">mic</span>
-                        <span class="material-symbols-outlined send-btn" id="send-btn">send</span>
+                        <span class="material-symbols-outlined" id="mic-btn" title="Voice Input">mic</span>
+                        <span class="material-symbols-outlined" id="gen-image-btn"
+                            title="Generate Image from Prompt">image</span>
+                        <span class="material-symbols-outlined send-btn" id="send-btn" title="Send Message">send</span>
                     </div>
                     <p class="disclaimer">Dinku may display inaccurate info, including about people, so double-check its
                         responses.</p>
@@ -368,6 +421,13 @@
                                 <span>Auto-read responses</span>
                                 <label class="settings-toggle">
                                     <input type="checkbox" id="auto-read-toggle">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-row" style="margin-top: 8px;">
+                                <span>Auto-send voice input</span>
+                                <label class="settings-toggle">
+                                    <input type="checkbox" id="auto-voice-send-toggle">
                                     <span class="toggle-slider"></span>
                                 </label>
                             </div>
@@ -670,8 +730,22 @@
                     </button>
                 </div>
             </div>
-            <div class="modal-body preview-body">
-                <iframe id="preview-frame" src="about:blank"></iframe>
+            <div class="modal-body preview-body"
+                style="display: flex; flex-direction: column; height: calc(100% - 60px);">
+                <iframe id="preview-frame" src="about:blank" style="flex: 1; border: none; min-height: 60%;"></iframe>
+                <!-- Console Output Area for Sandbox -->
+                <div id="console-output-container"
+                    style="flex: 0 0 30%; background: #0f1012; border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column;">
+                    <div
+                        style="padding: 5px 10px; background: #1e1f20; font-size: 12px; color: #aaa; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between;">
+                        <span>Console</span>
+                        <span class="material-symbols-outlined" id="clear-console-btn"
+                            style="cursor: pointer; font-size: 14px;" title="Clear Console">delete</span>
+                    </div>
+                    <div id="console-output"
+                        style="padding: 10px; overflow-y: auto; font-family: monospace; font-size: 13px; color: #a8c7fa; flex: 1;">
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -693,6 +767,18 @@
 
 
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.js"></script>
+    <script>
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+            window.monacoLoaded = true;
+        });
+    </script>
     <script type="module" src="components/sidebar/sidebar.js"></script>
     <script type="module" src="script.js?v=1.4.0"></script>
     <script>

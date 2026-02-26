@@ -1,0 +1,279 @@
+/* smoothness.css - Adding that extra layer of polish */
+
+:root {
+    --smooth-timing: cubic-bezier(0.23, 1, 0.32, 1);
+    --smooth-transition: transform 0.4s var(--smooth-timing), opacity 0.4s var(--smooth-timing), box-shadow 0.4s var(--smooth-timing);
+    --accent-glow: rgba(168, 199, 250, 0.3);
+}
+
+/* 1. Global Scrolling & Entrance */
+html {
+    scroll-behavior: smooth;
+    scrollbar-gutter: stable;
+}
+
+body {
+    opacity: 0;
+    animation: bodyFadeIn 0.8s var(--smooth-timing) forwards;
+    transition: background-color 0.8s var(--smooth-timing), color 0.8s var(--smooth-timing);
+}
+
+@keyframes bodyFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.99);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 2. Sleek Minimalist Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(168, 199, 250, 0.15);
+    border-radius: 10px;
+    transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(168, 199, 250, 0.4);
+}
+
+/* 3. Global Transition Overhaul */
+button,
+a,
+.card,
+.shortcut-card,
+.padels-option,
+.input-box,
+.sidebar-item,
+.modal-content,
+.user-profile-widget,
+.theme-toggle,
+.material-symbols-outlined {
+    transition: var(--smooth-transition) !important;
+}
+
+/* 4. Refined Message Entrance */
+.message {
+    animation: premiumSlideUp 0.6s var(--smooth-timing) forwards !important;
+    will-change: transform, opacity;
+}
+
+@keyframes premiumSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* 5. Interactive Glows & Elevation */
+.shortcut-card:hover,
+.card:hover {
+    transform: translateY(-6px) scale(1.02) !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px var(--accent-glow) !important;
+    border-color: rgba(168, 199, 250, 0.4) !important;
+}
+
+.input-box:focus-within {
+    transform: scale(1.005);
+    box-shadow: 0 0 30px rgba(168, 199, 250, 0.15);
+    border-color: rgba(168, 199, 250, 0.5) !important;
+}
+
+/* 6. Smooth Button Feedback */
+button:active {
+    transform: scale(0.96);
+}
+
+.send-btn.ready:hover {
+    transform: scale(1.1) rotate(-5deg);
+    color: var(--accent-blue) !important;
+    text-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* 7. Modal Smoothness */
+.modal {
+    backdrop-filter: blur(0px);
+    transition: backdrop-filter 0.5s var(--smooth-timing), opacity 0.5s var(--smooth-timing) !important;
+}
+
+.modal.active {
+    backdrop-filter: blur(8px);
+}
+
+.modal-content {
+    transform: scale(0.9) translateY(20px);
+    opacity: 0;
+    transition: transform 0.5s var(--smooth-timing), opacity 0.5s var(--smooth-timing) !important;
+}
+
+.modal.active .modal-content {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+/* 8. Staggered Text Reveal for Greetings */
+.greet p:first-child {
+    overflow: hidden;
+    white-space: nowrap;
+    width: fit-content;
+    border-right: 2px solid var(--accent-blue);
+    animation:
+        typing 1.5s steps(30, end) forwards,
+        blink-caret 0.75s step-end infinite,
+        hide-caret 0s 1.5s forwards;
+}
+
+.greet p:last-child {
+    overflow: hidden;
+    white-space: nowrap;
+    width: fit-content;
+    opacity: 0;
+    border-right: 2px solid var(--accent-blue);
+    animation:
+        typing 1.5s steps(30, end) 1.5s forwards,
+        blink-caret 0.75s step-end 1.5s infinite,
+        reveal 0.1s 1.5s forwards;
+}
+
+@keyframes typing {
+    from {
+        width: 0
+    }
+
+    to {
+        width: 100%
+    }
+}
+
+@keyframes blink-caret {
+
+    from,
+    to {
+        border-color: transparent
+    }
+
+    50% {
+        border-color: var(--accent-blue);
+    }
+}
+
+@keyframes hide-caret {
+    to {
+        border-right-color: transparent
+    }
+}
+
+@keyframes reveal {
+    to {
+        opacity: 0.5
+    }
+}
+
+/* 11. Staggered Entrance for Cards */
+.shortcuts-container {
+    opacity: 0;
+    animation: premiumSlideUp 0.8s var(--smooth-timing) 3s forwards;
+}
+
+.shortcut-card {
+    opacity: 0;
+    animation: premiumSlideUp 0.6s var(--smooth-timing) forwards;
+}
+
+.shortcut-card:nth-child(1) {
+    animation-delay: 3.1s;
+}
+
+.shortcut-card:nth-child(2) {
+    animation-delay: 3.2s;
+}
+
+.shortcut-card:nth-child(3) {
+    animation-delay: 3.3s;
+}
+
+.shortcut-card:nth-child(4) {
+    animation-delay: 3.4s;
+}
+
+/* 9. Sidebar item hover smoothness */
+.sidebar-item {
+    position: relative;
+    overflow: hidden;
+}
+
+.sidebar-item::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 70%;
+    background: var(--accent-blue);
+    border-radius: 0 4px 4px 0;
+    transition: width 0.3s var(--smooth-timing);
+}
+
+.sidebar-item:hover::after {
+    width: 4px;
+}
+
+.sidebar-item:hover {
+    padding-left: 12px !important;
+    background: rgba(168, 199, 250, 0.05) !important;
+}
+
+/* 12. Brand Glow Animation */
+.brand-name {
+    background: linear-gradient(90deg, #4b90ff, #ff5546, #4b90ff);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 3s linear infinite;
+    font-weight: 700 !important;
+}
+
+@keyframes shine {
+    to {
+        background-position: 200% center;
+    }
+}
+
+/* 13. Smooth Typing Indicator */
+.typing-indicator span {
+    animation: bounceTyping 1s infinite ease-in-out !important;
+}
+
+/* 14. Input container glow */
+.input-container {
+    transition: var(--smooth-transition);
+}
+
+.input-container:focus-within {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(168, 199, 250, 0.1);
+}
+
+/* 10. Smooth backdrop transitions for themes */
+body {
+    transition: background-color 0.8s var(--smooth-timing), color 0.8s var(--smooth-timing);
+}
