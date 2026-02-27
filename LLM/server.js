@@ -47,20 +47,17 @@ const SYSTEM_PROMPTS = {
 // Scalable Model List for High Concurrency (1000+ users)
 // We use multiple models so if one hits a rate limit, we immediately try another.
 const MODELS = [
-    "Qwen/Qwen2.5-7B-Instruct", // Primary reliable model
-    "Qwen/Qwen2.5-1.5B-Instruct", // High availability small model
-    "meta-llama/Llama-3.2-3B-Instruct", // Strong small model
-    "mistralai/Mistral-7B-Instruct-v0.3", // Classic reliable model
-    "Orion-zhen/Qwen2.5-7B-Instruct-Uncensored",
-    "huihui-ai/Qwen2.5-7B-Instruct-abliterated-v2",
-    "cooperleong00/Qwen2.5-7B-Instruct-Jailbroken"
+    "Qwen/Qwen2.5-7B-Instruct",
+    "Qwen/Qwen2.5-1.5B-Instruct",
+    "meta-llama/Llama-3.2-3B-Instruct",
+    "mistralai/Mistral-7B-Instruct-v0.3",
+    "google/gemma-2-2b-it"
 ];
 
 const DEEPSEEK_MODELS = [
     "deepseek-ai/deepseek-coder-6.7b-instruct",
-    "Qwen/Qwen2.5-Coder-7B-Instruct", // High quality coding fallback
-    "deepseek-ai/deepseek-coder-7b-instruct-v1.5",
-    "Qwen/Qwen2.5-Coder-1.5B-Instruct" // Ultra fast fallback
+    "Qwen/Qwen2.5-Coder-7B-Instruct",
+    "Qwen/Qwen2.5-Coder-1.5B-Instruct"
 ];
 
 // Simple in-memory queue to prevent server crashing under 1000+ concurrent hits
@@ -89,128 +86,142 @@ app.post("/vibe", (req, res) => {
     processQueue();
 });
 
-async function handleVibeRequest(req, res) {
-    let modelIndex = 0;
-    let lastError = null;
+// Helper to call HF Inference API with streaming
+async function callHuggingFace(model, messages, res) {
+    const API_URL = `https://api-inference.huggingface.co/models/${model}/v1/chat/completions`;
+
+    const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${HF_TOKEN}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            messages: messages,
+            max_tokens: 5000,
+            temperature: 0.7,
+            stream: true
+        })
+    });
+
+    if (response.status === 429) throw new Error("RATE_LIMIT");
+    if (response.status === 503) throw new Error("MODEL_LOADING");
+    if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error?.message || `HF Error ${response.status}`);
+    }
+
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let finalText = "";
 
     try {
-        const { prompt, mode = "vibe", history = [], sessionId = "default" } = req.body;
-        if (!prompt) {
-            if (!res.headersSent) res.status(400).json({ error: "Prompt is required" });
-            return;
-        }
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
 
-        const systemContent = SYSTEM_PROMPTS[mode] || SYSTEM_PROMPTS.vibe;
-        const messages = [
-            { role: "system", content: systemContent },
-            ...history,
-            { role: "user", content: prompt }
-        ];
+            const chunk = decoder.decode(value);
+            const lines = chunk.split("\n");
 
-        const currentModelList = mode === 'deepseek' ? DEEPSEEK_MODELS : MODELS;
-
-        // Retry logic with different models if rate limited
-        while (modelIndex < currentModelList.length) {
-            try {
-                const response = await fetch(HF_ROUTER_URL, {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${HF_TOKEN}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        model: currentModelList[modelIndex],
-                        messages: messages,
-                        max_tokens: 8000, // Increased from 2000 to allow full code generation
-                        temperature: 1.0,
-                        top_p: 0.95,
-                        top_k: 50,
-                        stream: true
-                    })
-                });
-
-                if (response.status === 429) {
-                    console.warn(`Rate limit on ${MODELS[modelIndex]}, trying next model...`);
-                    modelIndex++;
-                    continue; // Try next model
-                }
-
-                if (!response.ok) {
-                    const err = await response.json().catch(() => ({}));
-                    throw new Error(err.error?.message || "HF API Error");
-                }
-
-                res.setHeader('Content-Type', 'text/event-stream');
-                res.setHeader('Cache-Control', 'no-cache');
-                res.setHeader('Connection', 'keep-alive');
-
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder();
-                let finalText = "";
-
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-
-                    const chunk = decoder.decode(value);
-                    const lines = chunk.split("\n");
-
-                    for (const line of lines) {
-                        if (line.startsWith("data:")) {
-                            const dataStr = line.replace("data:", "").trim();
-                            if (dataStr === "[DONE]") {
-                                res.write("data: [DONE]\n\n");
-                                return; // This will exit handleVibeRequest and finish the response
-                            }
-                            try {
-                                const json = JSON.parse(dataStr);
-                                const token = json.choices[0]?.delta?.content || "";
-                                if (token) {
-                                    finalText += token;
-                                    res.write(`data: ${JSON.stringify({ token })}\n\n`);
-                                }
-                            } catch (e) { }
-                        }
+            for (const line of lines) {
+                if (line.startsWith("data:")) {
+                    const dataStr = line.replace("data:", "").trim();
+                    if (dataStr === "[DONE]") {
+                        res.write("data: [DONE]\n\n");
+                        continue;
                     }
-                }
-
-                // "Stor" implementation
-                try {
-                    await ensureStorageDir();
-                    const logFile = path.join(STORAGE_DIR, `${sessionId}.json`);
-                    const logEntry = { timestamp: new Date().toISOString(), prompt, response: finalText, mode, model: currentModelList[modelIndex] };
-                    let existingLogs = [];
                     try {
-                        const data = await fs.readFile(logFile, "utf8");
-                        existingLogs = JSON.parse(data);
-                    } catch { }
-                    existingLogs.push(logEntry);
-                    await fs.writeFile(logFile, JSON.stringify(existingLogs, null, 2));
-                } catch (storageErr) {
-                    console.error("Storage Error:", storageErr.message);
+                        const json = JSON.parse(dataStr);
+                        const token = json.choices[0]?.delta?.content || "";
+                        if (token) {
+                            finalText += token;
+                            res.write(`data: ${JSON.stringify({ token })}\n\n`);
+                        }
+                    } catch (e) { }
                 }
-
-                res.end();
-                return; // Success!
-
-            } catch (error) {
-                console.error(`Error with model ${MODELS[modelIndex]}:`, error.message);
-                lastError = error;
-                modelIndex++; // Try next model
             }
         }
+    } finally {
+        reader.releaseLock();
+    }
 
-        // If we get here, all models failed or were rate limited
-        if (!res.headersSent) {
-            res.status(503).json({ error: "All AI models are temporarily busy due to high traffic (1000+ users). Please wait a few seconds and try again." });
-        }
+    return finalText;
+}
 
-    } catch (globalError) {
-        console.error("Global Request Error:", globalError.message);
-        if (!res.headersSent) {
-            res.status(500).json({ error: globalError.message });
+async function handleVibeRequest(req, res) {
+    const { prompt, mode = "vibe", history = [], sessionId = "default" } = req.body;
+    if (!prompt) {
+        return res.status(400).json({ error: "Prompt is required" });
+    }
+
+    const systemContent = SYSTEM_PROMPTS[mode] || SYSTEM_PROMPTS.vibe;
+    const messages = [
+        { role: "system", content: systemContent },
+        ...history,
+        { role: "user", content: prompt }
+    ];
+
+    const currentModelList = mode === 'deepseek' ? DEEPSEEK_MODELS : MODELS;
+    let lastError = null;
+
+    for (let i = 0; i < currentModelList.length; i++) {
+        const model = currentModelList[i];
+        console.log(`[Vibe] Trying model ${i + 1}/${currentModelList.length}: ${model}`);
+
+        try {
+            const finalText = await callHuggingFace(model, messages, res);
+
+            // Success! Save to storage
+            try {
+                await ensureStorageDir();
+                const logFile = path.join(STORAGE_DIR, `${sessionId}.json`);
+                const logEntry = {
+                    timestamp: new Date().toISOString(),
+                    prompt,
+                    response: finalText,
+                    mode,
+                    model: model
+                };
+                let existingLogs = [];
+                try {
+                    const data = await fs.readFile(logFile, "utf8");
+                    existingLogs = JSON.parse(data);
+                } catch { }
+                existingLogs.push(logEntry);
+                await fs.writeFile(logFile, JSON.stringify(existingLogs, null, 2));
+            } catch (storageErr) {
+                console.error("Storage Error:", storageErr.message);
+            }
+
+            res.end();
+            return;
+        } catch (error) {
+            console.error(`[Vibe] Failed with ${model}: ${error.message}`);
+            lastError = error;
+
+            // If we've already started sending headers, we can't retry with another model easily
+            if (res.headersSent) {
+                console.error("[Vibe] Headers already sent, cannot fallback.");
+                res.write(`data: ${JSON.stringify({ token: "\n\n[Error: Connection lost during generation. Please retry.]" })}\n\n`);
+                res.write("data: [DONE]\n\n");
+                return res.end();
+            }
+
+            // If it's a fatal error that shouldn't be retried (unlikely here, most are transient)
+            if (error.message.includes("not found")) continue;
         }
     }
+
+    // All models failed
+    const finalErrorMessage = lastError?.message === "RATE_LIMIT"
+        ? "All AI models are temporarily busy (Rate Limit). Please wait a few seconds."
+        : `All AI models are busy or unreachable. Last Error: ${lastError?.message}`;
+
+    res.status(503).json({ error: finalErrorMessage });
 }
 
 /**
