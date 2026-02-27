@@ -47,16 +47,20 @@ const SYSTEM_PROMPTS = {
 // Scalable Model List for High Concurrency (1000+ users)
 // We use multiple models so if one hits a rate limit, we immediately try another.
 const MODELS = [
-    "huihui-ai/Qwen2.5-7B-Instruct-abliterated-v2",
+    "Qwen/Qwen2.5-7B-Instruct", // Primary reliable model
+    "Qwen/Qwen2.5-1.5B-Instruct", // High availability small model
+    "meta-llama/Llama-3.2-3B-Instruct", // Strong small model
+    "mistralai/Mistral-7B-Instruct-v0.3", // Classic reliable model
     "Orion-zhen/Qwen2.5-7B-Instruct-Uncensored",
-    "cooperleong00/Qwen2.5-7B-Instruct-Jailbroken",
-    "Qwen/Qwen2.5-7B-Instruct" // Original as final fallback
+    "huihui-ai/Qwen2.5-7B-Instruct-abliterated-v2",
+    "cooperleong00/Qwen2.5-7B-Instruct-Jailbroken"
 ];
 
 const DEEPSEEK_MODELS = [
     "deepseek-ai/deepseek-coder-6.7b-instruct",
-    "deepseek-ai/deepseek-coder-7b-instruct-v1.5", // Fallback variant if available
-    "Qwen/Qwen2.5-Coder-7B-Instruct" // High quality coding fallback
+    "Qwen/Qwen2.5-Coder-7B-Instruct", // High quality coding fallback
+    "deepseek-ai/deepseek-coder-7b-instruct-v1.5",
+    "Qwen/Qwen2.5-Coder-1.5B-Instruct" // Ultra fast fallback
 ];
 
 // Simple in-memory queue to prevent server crashing under 1000+ concurrent hits

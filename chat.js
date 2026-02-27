@@ -129,14 +129,7 @@ const LOCAL_URL = "http://localhost:7860";
 // Determine which URL to use
 let API_BASE_URL = DEFAULT_REMOTE_URL;
 
-// Auto-switch to local if on localhost or if remote is known to be down
-if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    API_BASE_URL = LOCAL_URL;
-    console.log("Dinku Chat: Running on localhost, using local backend:", API_BASE_URL);
-}
-
-
-// Auto-switch to local if on localhost or if remote is known to be down
+// Auto-switch to local if on localhost
 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     API_BASE_URL = LOCAL_URL;
     console.log("Dinku Chat: Running on localhost, using local backend:", API_BASE_URL);
@@ -1326,7 +1319,14 @@ ${webSearchStr}
             const errJson = await response.json();
             throw new Error(errJson.error || "Rate limit reached");
         }
-        if (!response.ok) throw new Error("Offline");
+        if (response.status === 404) {
+            throw new Error("API endpoint not found. Ensure the backend is correctly configured.");
+        }
+        if (response.status === 503 || response.status === 502) {
+            const errJson = await response.json().catch(() => ({}));
+            throw new Error(errJson.error || "Server is temporarily busy or waking up (503). Please wait a moment.");
+        }
+        if (!response.ok) throw new Error("Offline or Server Error");
 
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
@@ -1565,19 +1565,27 @@ ${webSearchStr}
             })
         });
 
-        if (response.status === 429) {
-            const errJson = await response.json();
+        if (response.status === 429 || response.status === 503 || response.status === 502) {
+            const errJson = await response.json().catch(() => ({}));
             const errBubble = document.createElement('div');
             errBubble.classList.add('message', 'ai');
+            const icon = response.status === 429 ? 'bolt' : 'cloud_off';
+            const errorText = errJson.error || (response.status === 503 ? "Server is temporarily busy or waking up. Please try again in a few seconds." : "Server error.");
+
             errBubble.innerHTML = `
                 <div class="error-msg">
-                    <span class="material-symbols-outlined">bolt</span>
-                    ${errJson.error}
+                    <span class="material-symbols-outlined">${icon}</span>
+                    ${errorText}
                 </div>
             `;
             indicator.remove();
             chatArea.appendChild(errBubble);
+            scrollToBottom('smooth');
             return;
+        }
+
+        if (!response.ok) {
+            throw new Error("Server communication failed.");
         }
 
         indicator.remove();
