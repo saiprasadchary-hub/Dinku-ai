@@ -1,5 +1,5 @@
 {
-    "version": "1.6.0",
-    "timestamp": 1740614849000,
-    "notes": "Added DeepSeek-Coder persona and high-concurrency backend support"
+    "version": "1.7.0",
+    "timestamp": 1740724800000,
+    "notes": "Enabled HighScale backend with multi-core clustering and 10k+ user support"
 }

@@ -11,7 +11,7 @@ import { AntigravityChunk } from './effects/Antigravity.js';
 import { Nebula } from './effects/Nebula.js';
 import { Matrix } from './effects/Matrix.js';
 import { Prism } from './effects/Prism.js';
-import { CyberStorm } from './effects/cyberstorm.js?v=1.4.0';
+import { CyberStorm } from './effects/cyberstorm.js?v=1.4.1';
 import { ZeroGravityObject } from './effects/ZeroGravity.js';
 
 const chatArea = document.getElementById('chat-stream') || document.getElementById('chat-area');

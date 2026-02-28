@@ -1,1 +1,1 @@
-import './chat.js?v=1.4.0';
+import './chat.js?v=1.4.1';
