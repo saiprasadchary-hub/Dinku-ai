@@ -271,7 +271,11 @@ Rules:
         if (!prompt) return res.status(400).json({ error: "Prompt is required" });
 
         const systemContent = SYSTEM_PROMPTS[mode] || SYSTEM_PROMPTS.vibe;
-        let messages = [{ role: "system", content: systemContent }, ...history, { role: "user", content: prompt }];
+        let userPrompt = prompt;
+        if (mode === "vibe") {
+            userPrompt += "\n\n(IMPORTANT: If I typed in an Indian language using English letters like 'ella unnav', YOU MUST reply using ONLY English letters like 'nenu bagunnanu'. DO NOT under any circumstances use native scripts like Telugu/Hindi characters.)";
+        }
+        let messages = [{ role: "system", content: systemContent }, ...history, { role: "user", content: userPrompt }];
         const currentModelList = mode === 'deepseek' ? DEEPSEEK_MODELS : MODELS;
         let lastError = null;
 
