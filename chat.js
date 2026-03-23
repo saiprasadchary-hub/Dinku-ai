@@ -251,7 +251,7 @@ function updateSendButtonState() {
 
 
 // 1.1 Chat History Formatter for AI
-function getHistoryForAI(limit = 40) {
+function getHistoryForAI(limit = 20) {
     // Map chatHistory to the format expected by the backend
     return chatHistory.slice(-limit).map(msg => {
         if (msg.sender === 'user') {

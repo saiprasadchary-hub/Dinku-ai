@@ -119,9 +119,7 @@ Rules:
         "Qwen/Qwen2.5-1.5B-Instruct",
         "meta-llama/Llama-3.2-3B-Instruct",
         "mistralai/Mistral-7B-Instruct-v0.3",
-        "google/gemma-2-2b-it",
-        "HuggingFaceH4/zephyr-7b-beta",
-        "microsoft/Phi-3-mini-4k-instruct"
+        "google/gemma-2-2b-it"
     ];
 
     const DEEPSEEK_MODELS = [
@@ -163,7 +161,7 @@ Rules:
             body: JSON.stringify({
                 model: model,
                 messages: messages,
-                max_tokens: 8192,
+                max_tokens: 4096,
                 temperature: 0.7,
                 stream: true
             })
@@ -259,7 +257,7 @@ Rules:
             // remove script, style tags
             $('script, style, nav, footer, iframe, noscript').remove();
             let text = $('body').text().replace(/\\s+/g, ' ').trim();
-            return text.substring(0, 15000); // return up to 15000 chars of main content
+            return text.substring(0, 8000); // return up to 8000 chars of main content
         } catch (error) {
             console.error(error);
             return `Failed to read ${url}`;
