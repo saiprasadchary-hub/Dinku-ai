@@ -91,7 +91,7 @@ if (cluster.isPrimary) {
     }
 
     const SYSTEM_PROMPTS = {
-        vibe: "You are Dinku, a friendly AI assistant. You perfectly understand transliterated languages like Tenglish and Hinglish. CRITICAL RULE: If the user types a regional language using the English alphabet (e.g., 'ella unnav'), YOU MUST REPLY USING ONLY THE ENGLISH ALPHABET (e.g., 'Nenu bagunnanu'). ABSOLUTELY NO NATIVE SCRIPTS ALLOWED unless the user uses them first. Be natural, direct, and kind.",
+        vibe: "You are Dinku, a friendly AI assistant. You perfectly understand transliterated languages like Tenglish (Telugu in English script) and Hinglish. If a user speaks in Tenglish (e.g., 'ella unnav'), YOU MUST REPLY IN TENGLISH using the English alphabet (e.g., 'Nenu bagunnanu, meeru ela unnaru?'). DO NOT use native Telugu scripts (like హలో) unless the user types in that script. Be natural, direct, and kind.",
         ui: "You are a world-class UI/UX and CSS expert. Focus on modern aesthetics, glassmorphism, animations, and beautiful responsive layouts.",
         security: "You are a Cyber-Security Teacher and Researcher. ...",
         logic: "You are a backend architect specializing in algorithms ...",
@@ -119,7 +119,8 @@ Rules:
         "Qwen/Qwen2.5-1.5B-Instruct",
         "meta-llama/Llama-3.2-3B-Instruct",
         "mistralai/Mistral-7B-Instruct-v0.3",
-        "google/gemma-2-2b-it"
+        "google/gemma-2-2b-it",
+        "HuggingFaceH4/zephyr-7b-beta"
     ];
 
     const DEEPSEEK_MODELS = [
@@ -161,7 +162,7 @@ Rules:
             body: JSON.stringify({
                 model: model,
                 messages: messages,
-                max_tokens: 4096,
+                max_tokens: 4000,
                 temperature: 0.7,
                 stream: true
             })
@@ -257,7 +258,7 @@ Rules:
             // remove script, style tags
             $('script, style, nav, footer, iframe, noscript').remove();
             let text = $('body').text().replace(/\\s+/g, ' ').trim();
-            return text.substring(0, 8000); // return up to 8000 chars of main content
+            return text.substring(0, 15000); // return up to 15000 chars of main content
         } catch (error) {
             console.error(error);
             return `Failed to read ${url}`;
@@ -269,11 +270,7 @@ Rules:
         if (!prompt) return res.status(400).json({ error: "Prompt is required" });
 
         const systemContent = SYSTEM_PROMPTS[mode] || SYSTEM_PROMPTS.vibe;
-        let userPrompt = prompt;
-        if (mode === "vibe") {
-            userPrompt += "\n\n(IMPORTANT: If I typed in an Indian language using English letters like 'ella unnav', YOU MUST reply using ONLY English letters like 'nenu bagunnanu'. DO NOT under any circumstances use native scripts like Telugu/Hindi characters.)";
-        }
-        let messages = [{ role: "system", content: systemContent }, ...history, { role: "user", content: userPrompt }];
+        let messages = [{ role: "system", content: systemContent }, ...history, { role: "user", content: prompt }];
         const currentModelList = mode === 'deepseek' ? DEEPSEEK_MODELS : MODELS;
         let lastError = null;
 
