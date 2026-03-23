@@ -1,0 +1,10 @@
+[
+  {
+    "timestamp": "2026-03-13T13:21:25.471Z",
+    "prompt": "hi",
+    "response": "Hello! How can I assist you today with your full-stack development projects or any other tech-related queries you might have?",
+    "mode": "vibe",
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "sessionId": "default"
+  }
+]

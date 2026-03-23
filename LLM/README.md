@@ -1,5 +1,5 @@
 ---
-title: Dinku Backend
+title: Prachee ai Backend
 emoji: 🚀
 colorFrom: blue
 colorTo: indigo
@@ -8,15 +8,15 @@ app_port: 7860
 pinned: false
 ---
 
-# Dinku Scalable LLM Backend
+# Prachee ai Scalable LLM Backend
 
-This is the backend for the Dinku AI assistant, designed for high-capacity streaming chat and image generation.
+This is the backend for the Prachee ai assistant, designed for high-capacity streaming chat and image generation.
 
 ## Deployment Details
 
 - **SDK**: Docker
 - **Port**: 7860
-- **Base Image**: node:18
+- **Base Image**: node:20
 
 ## Environment Variables
 

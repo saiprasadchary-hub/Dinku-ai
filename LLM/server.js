@@ -57,7 +57,7 @@ if (cluster.isPrimary) {
     // 1. Rate Limiting for Fairness (Essential for 10k+ Users)
     const limiter = rateLimit({
         windowMs: 15 * 60 * 1000, // 15 minutes
-        max: 50, // limit each IP to 50 requests per window
+        max: 500000, // Practically unlimited: 5 Lakhs requests per 15 mins
         message: { error: "Too many requests. Please wait a moment." },
         standardHeaders: true,
         legacyHeaders: false,
@@ -91,7 +91,7 @@ if (cluster.isPrimary) {
     }
 
     const SYSTEM_PROMPTS = {
-        vibe: "You are an expert full-stack developer and friendly Davii ai assistant. Be professional, direct, and kind.",
+        vibe: "You are Dinku, an expert full-stack developer and friendly AI assistant. You possess deep knowledge of all programming languages and all spoken global languages. Always reply in the exact language the user uses to speak to you. Be professional, direct, and kind.",
         ui: "You are a world-class UI/UX and CSS expert. Focus on modern aesthetics, glassmorphism, animations, and beautiful responsive layouts.",
         security: "You are a Cyber-Security Teacher and Researcher. ...",
         logic: "You are a backend architect specializing in algorithms ...",
@@ -163,7 +163,7 @@ Rules:
             body: JSON.stringify({
                 model: model,
                 messages: messages,
-                max_tokens: 5000,
+                max_tokens: 8192,
                 temperature: 0.7,
                 stream: true
             })
@@ -232,7 +232,7 @@ Rules:
                     results.push(`Title: ${title}\nURL: ${url}\nSnippet: ${snippet}`);
                 }
             });
-            return results.slice(0, 5).join('\n\n') || "No results found.";
+            return results.slice(0, 10).join('\n\n') || "No results found.";
         } catch (error) {
             console.error(error);
             return "Search failed.";
@@ -259,7 +259,7 @@ Rules:
             // remove script, style tags
             $('script, style, nav, footer, iframe, noscript').remove();
             let text = $('body').text().replace(/\\s+/g, ' ').trim();
-            return text.substring(0, 4000); // return up to 4000 chars of main content
+            return text.substring(0, 15000); // return up to 15000 chars of main content
         } catch (error) {
             console.error(error);
             return `Failed to read ${url}`;
@@ -397,7 +397,7 @@ Rules:
         }
     });
 
-    app.get("/", (req, res) => res.send(`Davii ai [Worker ${process.pid}] is powering the vibe! 🛸`));
+    app.get("/", (req, res) => res.send(`Prachee ai [Worker ${process.pid}] is powering the vibe! 🛸`));
 
     const PORT = 7860;
     app.listen(PORT, () => console.log(`[Worker ${process.pid}] Multi-core node running on port ${PORT}`));
